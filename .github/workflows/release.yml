@@ -59,11 +59,11 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
-      # - name: Eslint
-      #   run: npm run lint
+      - name: Eslint
+        run: npm run lint
 
-      # - name: Prettier
-      #   run: npm run format
+      - name: Prettier
+        run: npm run format
 
       - name: Typescript
         run: npm run type:check
@@ -78,8 +78,6 @@ jobs:
 
       - name: Install Node.js
         uses: actions/setup-node@v4
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
         with:
           node-version: '20.x'
 
@@ -102,4 +100,6 @@ jobs:
       - name: Release
         env:
           HUSKY: 0
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release

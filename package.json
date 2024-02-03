@@ -1,0 +1,24 @@
+{
+  "name": "wsgo",
+  "version": "0.0.0",
+  "type": "module",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "type:check": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-plugin-dts": "^3.7.2"
+  },
+  "repository": "https://github.com/melishev/wsgo.git",
+  "author": {
+    "name": "Matvey Melishev",
+    "email": "melishevm@gmail.com"
+  }
+}

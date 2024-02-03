@@ -1,1 +1,2 @@
-пожалуйста, фиксируйте версию пакета, если вы уверены в ней, это библиотека пока что не стабильна, и может иметь некоторые отличия в поведения взависимости от версии
+> [!WARNING]
+> Please lock the version of the package. This library is not stable yet and may have some behavioral differences depending on the version.

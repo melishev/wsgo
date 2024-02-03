@@ -45,6 +45,11 @@
     "name": "Matvey Melishev",
     "email": "melishevm@gmail.com"
   },
+  "keywords": [
+    "WebSocket",
+    "RFC-6455",
+    "real-time"
+  ],
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"

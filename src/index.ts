@@ -1,7 +1,8 @@
-import { Subscriptions } from "./types"
+import { type Subscriptions } from './types'
+import { type RemoveFirstFromTuple } from './types/utils'
 
 /** Method allows you create new WebSocket connection */
-const create = (url: string) => {
+const create = (url: string): { send: (...args: RemoveFirstFromTuple<Parameters<typeof send>>) => void, subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>) => void } => {
   const ws = new WebSocket(url)
   const subscriptions: Subscriptions = {}
 
@@ -23,22 +24,22 @@ const create = (url: string) => {
   }
 
   return {
-    send: (...args: RemoveFirstFromTuple<Parameters<typeof send>>) => send(ws, ...args),
-    subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>) => subscribe(subscriptions, ...args),
+    send: (...args: RemoveFirstFromTuple<Parameters<typeof send>>): ReturnType<typeof send> => { send(ws, ...args) },
+    subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>): ReturnType<typeof subscribe> => { subscribe(subscriptions, ...args) }
   }
 }
 
 /** Method allows you to send an event to the server */
-const send = (ws: WebSocket, eventName: string, data?: any) => {
+function send (ws: WebSocket, eventName: string, data?: any): void {
   const timeout = 100
 
-  console.group(eventName, data || '')
+  console.group(eventName, data)
   ws.send(JSON.stringify({ event: eventName, data }))
-  setTimeout(() => console.groupEnd(), timeout)
+  setTimeout(() => { console.groupEnd() }, timeout)
 }
 
 /** Method allows you to subscribe to listen to a specific event */
-function subscribe(subscriptions: Subscriptions, eventName: string, callback: (message: any) => any) {
+function subscribe (subscriptions: Subscriptions, eventName: string, callback: (message: any) => any): void {
   if (eventName in subscriptions) return
 
   Object.assign(subscriptions, { [eventName]: callback })

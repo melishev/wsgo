@@ -41,7 +41,10 @@
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.7.2"
   },
-  "repository": "https://github.com/melishev/wsgo.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/melishev/wsgo.git"
+  },
   "author": {
     "name": "Matvey Melishev",
     "email": "melishevm@gmail.com"

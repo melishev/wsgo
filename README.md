@@ -7,3 +7,12 @@
 
 > [!WARNING]
 > Please lock the version of the package. This library is not stable yet and may have some behavioral differences depending on the version.
+
+### What is WSGO?
+
+The WSGO library acts as an abstraction on top of a pure WebSocket connection. Think of it as:
+
+- Socket.io, only without being tied to your server implementation
+- Axios, just for WebSocket communication
+
+WSGO is designed to standardize communication between client and server through an explicit and common communication format

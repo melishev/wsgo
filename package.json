@@ -1,7 +1,7 @@
 {
   "name": "wsgo",
   "description": "WebSocket client for the browser. Simplifying development and debugging",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",

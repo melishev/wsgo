@@ -3,7 +3,11 @@ import { defineConfig } from 'vitest/config'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-  plugins: [dts()],
+  plugins: [
+    dts({
+      entryRoot: 'src',
+    }),
+  ],
 
   test: {
     environment: 'jsdom',

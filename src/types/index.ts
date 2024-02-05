@@ -5,6 +5,7 @@ export interface WSGOConfig {
   onDisconnected?: (ws: WebSocket, event: CloseEvent) => void
   onError?: (ws: WebSocket, event: Event) => void
 
+  debugging?: boolean
   immediate?: boolean
 }
 

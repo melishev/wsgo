@@ -13,14 +13,14 @@ export default function create(
 
   open: () => void
   close: () => void
-  send: (...args: RemoveFirstFromTuple<Parameters<typeof send>>) => void
-  subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>) => void
+  send: (eventName: Parameters<typeof send>[0], data?: Parameters<typeof send>[1]) => ReturnType<typeof send>
+  subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>) => ReturnType<typeof subscribe>
 } {
   let ws: WebSocket | undefined
   const subscriptions: WSGOSubscriptions = {}
 
   if (config?.immediate ?? true) {
-    ws = open(url, config)
+    ws = open(url)
 
     if (ws !== undefined) {
       _listen(ws, subscriptions)
@@ -28,9 +28,11 @@ export default function create(
   }
 
   return {
-    ws,
+    get ws() {
+      return ws
+    },
     open: () => {
-      ws = open(url, config)
+      ws = open(url)
 
       if (ws !== undefined) {
         _listen(ws, subscriptions)
@@ -39,16 +41,16 @@ export default function create(
     close: () => {
       close(ws)
     },
-    send: (...args: RemoveFirstFromTuple<Parameters<typeof send>>): ReturnType<typeof send> => {
-      send(ws, ...args)
+    send: (...args) => {
+      send(...args, ws, config)
     },
-    subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>): ReturnType<typeof subscribe> => {
+    subscribe: (...args) => {
       subscribe(subscriptions, ...args)
     },
   }
 }
 
-function open(url?: string, config?: WSGOConfig): WebSocket | undefined {
+function open(url?: string): WebSocket | undefined {
   if (url === undefined) return
 
   // close()
@@ -77,13 +79,25 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, config?: WSGOC
   ws.onmessage = (e: MessageEvent<any>): any => {
     if (e.data === 'pong') return
 
-    const message = JSON.parse(e.data)
+    let message
 
-    if (message.event === 'exception') {
-      console.error(message.data)
-    } else {
-      const { event, data, time } = message
-      console.log(`%c${new Date(time).toLocaleTimeString()}%c`, 'color: gray', '', event, data)
+    try {
+      message = JSON.parse(e.data)
+    } catch (e) {
+      if (config?.debugging ?? false) {
+        console.error(e)
+      }
+
+      return
+    }
+
+    if (config?.debugging ?? false) {
+      if (message.event === 'exception') {
+        console.error(message.data)
+      } else {
+        const { event, data, time } = message
+        console.log(`%c${new Date(time).toLocaleTimeString()}%c`, 'color: gray', '', event, data)
+      }
     }
 
     if (message.event in subscriptions) {
@@ -92,7 +106,7 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, config?: WSGOC
   }
 }
 
-function close(ws?: WebSocket, ...[code = 1000, reason]: Parameters<typeof ws.close>): void {
+function close(ws?: WebSocket, ...[code = 1000, reason]: Parameters<WebSocket['close']>): void {
   if (ws === undefined) return
 
   // stop heartbeat interval
@@ -102,19 +116,20 @@ function close(ws?: WebSocket, ...[code = 1000, reason]: Parameters<typeof ws.cl
 }
 
 /** Method allows you to send an event to the server */
-function send(ws?: WebSocket, eventName: string, data?: any): void {
+function send(eventName: string, data?: any, ws?: WebSocket, config?: WSGOConfig): void {
   if (ws === undefined) return
 
-  // start debug logging
-  const timeout = 100
-  console.group(eventName, data)
+  if (config?.debugging ?? false) {
+    // start debug logging
+    const timeout = 100
+    console.group(eventName, data)
+    // stop debug logging
+    setTimeout(() => {
+      console.groupEnd()
+    }, timeout)
+  }
 
   ws.send(JSON.stringify({ event: eventName, data }))
-
-  // stop debug logging
-  setTimeout(() => {
-    console.groupEnd()
-  }, timeout)
 }
 
 /** Method allows you to subscribe to listen to a specific event */

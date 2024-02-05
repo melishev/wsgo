@@ -72,6 +72,9 @@ jobs:
       - name: Testing
         run: npm run test
 
+      - name: 'Report Coverage'
+        uses: davelosert/vitest-coverage-report-action@v2
+
   release:
     needs: tests
     runs-on: ubuntu-latest

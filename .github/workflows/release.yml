@@ -79,6 +79,12 @@ jobs:
       - name: Typescript
         run: npm run type:check
 
+      - name: Testing
+        run: npx vitest --coverage.enabled true
+
+      - name: 'Report Coverage'
+        uses: davelosert/vitest-coverage-report-action@v2
+
   release:
     needs: tests
     runs-on: ubuntu-latest

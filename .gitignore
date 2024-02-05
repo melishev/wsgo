@@ -23,4 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
+# Tests
+coverage
+
 CHANGELOG.md

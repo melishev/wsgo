@@ -59,6 +59,7 @@
     "RFC-6455",
     "real-time"
   ],
+  "license": "MIT",
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"

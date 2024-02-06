@@ -28,6 +28,7 @@
     "@semantic-release/github": "^9.2.6",
     "@semantic-release/npm": "^11.0.2",
     "@semantic-release/release-notes-generator": "^12.1.0",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@vitest/coverage-v8": "^1.2.2",
     "eslint": "^8.56.0",
@@ -44,7 +45,8 @@
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.7.2",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "ws": "^8.16.0"
   },
   "repository": {
     "type": "git",

@@ -1,16 +1,33 @@
-import { describe, it, expect, vitest } from 'vitest'
+import { describe, it, expect, vitest, beforeAll, afterAll } from 'vitest'
 import WSGO from '../src/index'
+import ws from 'ws'
 
 describe('subscribe', () => {
-  it('should be a browser env', () => {
-    expect(typeof window).not.toBe('undefined')
+  let port = 0
+  let server: ws.Server
+
+  beforeAll(() => {
+    server = new ws.WebSocketServer({ port })
+
+    server.on('connection', (ws) => {
+      ws.on('message', (data, isBinary) => {
+        const message = isBinary ? data : data.toString()
+        ws.send(message)
+      })
+    })
+
+    port = (server.address() as ws.AddressInfo).port
+  })
+
+  afterAll(() => {
+    server.close()
   })
 
   it('should subscribe to event', async () => {
     let event: any
 
     // Arrange
-    const wsgo = WSGO(import.meta.env.VITE_SERVER_URL)
+    const wsgo = WSGO(`ws://localhost:${port}`)
     await vitest.waitFor(() => {
       if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
         throw new Error()
@@ -31,11 +48,13 @@ describe('subscribe', () => {
     expect(event).toStrictEqual({ event: 'eventName', data: { text: 'Hello World!' } })
   })
 
-  it('should receive an error from the server', async () => {
+  it.todo('should work once', () => {})
+
+  it.todo('should receive an error from the server', async () => {
     // TODO: implement own server for testing needs
     // let event: any
     // // Arrange
-    // const wsgo = WSGO(import.meta.env.VITE_SERVER_URL)
+    // const wsgo = WSGO(`ws://localhost:${port}`)
     // await vitest.waitFor(() => {
     //   if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
     //     throw new Error()

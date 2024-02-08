@@ -1,6 +1,8 @@
-import { type WSGOConfig, type WSGOSubscribeRespone, type WSGOSubscriptions } from './types'
+import { type WSGOConfig, type WSGOSubscriptions } from './types'
 import { type RemoveFirstFromTuple } from './types/utils'
 
+import { send } from './send'
+import { subscribe } from './subscribe'
 import { heartbeat } from './utils'
 
 /** Method allows you create new WebSocket connection */
@@ -14,7 +16,7 @@ export default function create(
   open: () => void
   close: () => void
   send: (eventName: Parameters<typeof send>[0], data?: Parameters<typeof send>[1]) => ReturnType<typeof send>
-  subscribe: (...args: RemoveFirstFromTuple<Parameters<typeof subscribe>>) => ReturnType<typeof subscribe>
+  subscribe: <T>(...args: RemoveFirstFromTuple<Parameters<typeof subscribe<T>>>) => ReturnType<typeof subscribe<T>>
 } {
   let ws: WebSocket | undefined
   const subscriptions: WSGOSubscriptions = {}
@@ -113,32 +115,4 @@ function close(ws?: WebSocket, ...[code = 1000, reason]: Parameters<WebSocket['c
 
   // close websocket connection
   ws.close(code, reason)
-}
-
-/** Method allows you to send an event to the server */
-function send(eventName: string, data?: any, ws?: WebSocket, config?: WSGOConfig): void {
-  if (ws === undefined) return
-
-  if (config?.debugging ?? false) {
-    // start debug logging
-    const timeout = 100
-    console.group(eventName, data)
-    // stop debug logging
-    setTimeout(() => {
-      console.groupEnd()
-    }, timeout)
-  }
-
-  ws.send(JSON.stringify({ event: eventName, data }))
-}
-
-/** Method allows you to subscribe to listen to a specific event */
-function subscribe(
-  subscriptions: WSGOSubscriptions,
-  eventName: string,
-  callback: (message: WSGOSubscribeRespone<any>) => any,
-): void {
-  if (eventName in subscriptions) return
-
-  Object.assign(subscriptions, { [eventName]: callback })
 }

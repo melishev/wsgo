@@ -1,6 +1,6 @@
-import { formatString, fromMsToUp } from './helpers'
-import { type WSGOSubscribeResponse, type WSGOSubscribeCallback } from './subscribe/types'
-import { type WSGOEventName, type WSGOConfig, type WSGOSubscriptions } from './types'
+import { formatString, fromMsToUp } from '../helpers'
+import type { WSGOSubscribeResponse, WSGOSubscribeCallback } from './types'
+import type { WSGOEventName, WSGOConfig, WSGOSubscriptions } from '../types'
 
 /** Method allows you to subscribe to listen to a specific event */
 export function subscribe<T>(

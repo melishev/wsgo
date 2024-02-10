@@ -5,9 +5,9 @@ export function createMockWSServer(port: number = 0): { server: ws.WebSocketServ
 
   server.on('connection', (ws) => {
     ws.on('message', (data, isBinary) => {
-      data = isBinary ? data : JSON.parse(data.toString())
+      const parsedData = isBinary ? data : (JSON.parse(data.toString()) as any)
 
-      if (data.event === 'ping') {
+      if (parsedData.event === 'ping') {
         const message = { event: 'pong', timeSended: Date.now() }
         ws.send(JSON.stringify(message))
       }

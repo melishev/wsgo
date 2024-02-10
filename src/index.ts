@@ -1,6 +1,7 @@
 import { type WSGOEventName, type WSGOConfig, type WSGOSubscriptions } from './types'
 
 import { send } from './send'
+import type { WSGOSendData } from './send/types'
 import { subscribe } from './subscribe'
 import type { WSGOSubscribeCallback } from './subscribe/types'
 import { heartbeatStart, heartbeatStop, listenHeartbeat } from './heartbeat'
@@ -15,7 +16,7 @@ export default function create(
 
   open: () => void
   close: () => void
-  send: (eventName: WSGOEventName, data?: Parameters<typeof send>[1]) => void
+  send: (eventName: WSGOEventName, data?: WSGOSendData) => void
   subscribe: <T>(eventName: WSGOEventName, callback: WSGOSubscribeCallback<T>) => void
 } {
   let ws: WebSocket | undefined
@@ -59,7 +60,9 @@ export default function create(
       close(ws)
     },
     send: (...args) => {
-      send(...args, ws, _config)
+      if (ws === undefined) return
+
+      send(ws, _config, ...args)
     },
     subscribe: (...args) => {
       subscribe(...args, subscriptions, _config)
@@ -83,7 +86,7 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
   ws.onopen = (ev) => {
     _config.onConnected?.(ws, ev)
 
-    heartbeatStart(ws)
+    heartbeatStart(ws, _config)
   }
 
   ws.onclose = (ev) => {
@@ -97,7 +100,7 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
   }
 
   ws.onmessage = (e: MessageEvent<any>): any => {
-    listenHeartbeat(ws, e)
+    listenHeartbeat(ws, _config, e)
 
     let message
 

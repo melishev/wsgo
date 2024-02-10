@@ -1,15 +1,16 @@
 import { send } from './send'
+import type { WSGOConfig } from './types'
 
 const heartbeatMessage = 'ping'
 const heartbeatInterval = 1000
 
 let heartbeatTimeout: ReturnType<typeof setTimeout> | undefined
 
-export function heartbeatStart(ws: WebSocket): void {
+export function heartbeatStart(ws: WebSocket, _config: WSGOConfig): void {
   heartbeatStop()
 
   heartbeatTimeout = setTimeout(() => {
-    send(heartbeatMessage, heartbeatMessage, ws)
+    send(ws, _config, heartbeatMessage, heartbeatMessage)
   }, heartbeatInterval)
 }
 
@@ -18,9 +19,9 @@ export function heartbeatStop(): void {
   heartbeatTimeout = undefined
 }
 
-export function listenHeartbeat(ws: WebSocket, e: MessageEvent<any>): void {
+export function listenHeartbeat(ws: WebSocket, _config: WSGOConfig, e: MessageEvent<any>): void {
   if (e.data === heartbeatMessage) {
-    heartbeatStart(ws)
+    heartbeatStart(ws, _config)
     // eslint-disable-next-line no-useless-return
     return
   }

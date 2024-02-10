@@ -1,10 +1,9 @@
-import { type WSGOConfig } from './types'
+import type { WSGOSendData } from './send/types'
+import type { WSGOEventName, WSGOConfig } from './types'
 
 /** Method allows you to send an event to the server */
-export function send(eventName: string, data?: any, ws?: WebSocket, config?: WSGOConfig): void {
-  if (ws === undefined) return
-
-  if (config?.debugging ?? false) {
+export function send(ws: WebSocket, _config: WSGOConfig, eventName: WSGOEventName, data?: WSGOSendData): void {
+  if (_config.debugging) {
     // start debug logging
     const timeout = 100
     console.group(eventName, data)

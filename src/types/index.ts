@@ -1,6 +1,8 @@
-export type WSGOSubscriptions = Record<string, (message: any) => any>
+import type { WSGOHeartbeat } from '../heartbeat/types'
 
 export type WSGOEventName = string
+
+export type WSGOSubscriptions = Record<string, (message: any) => any>
 
 export interface WSGOConfig {
   onConnected?: (ws: WebSocket, event: Event) => void
@@ -9,30 +11,5 @@ export interface WSGOConfig {
 
   debugging: boolean
   immediate: boolean
-  heartbeat: boolean
+  heartbeat: WSGOHeartbeat
 }
-
-export type WSGOHeartbeat =
-  | boolean
-  | {
-      /**
-       * Message for the heartbeat
-       *
-       * @default 'ping'
-       */
-      message?: string | ArrayBuffer | Blob
-
-      /**
-       * Interval, in milliseconds
-       *
-       * @default 1000
-       */
-      interval?: number
-
-      /**
-       * Heartbeat response timeout, in milliseconds
-       *
-       * @default 1000
-       */
-      pongTimeout?: number
-    }

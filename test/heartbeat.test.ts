@@ -3,7 +3,7 @@ import WSGO from '../src/index'
 import ws from 'ws'
 import { createMockWSServer } from './utils'
 
-describe('open', () => {
+describe('heartbeat', () => {
   const date = new Date(2000, 1, 1)
 
   let port: number = 0
@@ -50,7 +50,7 @@ describe('open', () => {
     )
 
     // Assert
-    expect(event).toStrictEqual({ event: eventName, timeSended: Date.now() })
+    expect(event).toStrictEqual({ event: eventName, timeSended: Date.now(), timeReceived: Date.now() })
   })
 
   it.todo('must close the connection if no response is received from the server')

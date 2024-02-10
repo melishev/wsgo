@@ -44,7 +44,6 @@ describe('subscribe', () => {
         throw new Error()
       }
     })
-    wsgo.close()
 
     // Assert
     expect(event).toStrictEqual({ event: eventName, data: eventData, timeSended: Date.now(), timeReceived: Date.now() })

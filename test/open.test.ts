@@ -1,22 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import WSGO from '../src/index'
 import ws from 'ws'
+import { createMockWSServer } from './utils'
 
 describe('open', () => {
-  let port = 0
+  let port: number = 0
   let server: ws.Server
 
   beforeAll(() => {
-    server = new ws.WebSocketServer({ port })
+    const mockWSServer = createMockWSServer(port)
 
-    server.on('connection', (ws) => {
-      ws.on('message', (data, isBinary) => {
-        const message = isBinary ? data : data.toString()
-        ws.send(message)
-      })
-    })
-
-    port = (server.address() as ws.AddressInfo).port
+    server = mockWSServer.server
+    port = mockWSServer.port
   })
 
   afterAll(() => {
@@ -38,4 +33,6 @@ describe('open', () => {
     // check source data
     expect(wsgo.ws?.url).toBe(`ws://localhost:${port}/`)
   })
+
+  it.todo('should open new Websocket, after closing old', () => {})
 })

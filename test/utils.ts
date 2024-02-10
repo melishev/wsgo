@@ -12,7 +12,7 @@ export function createMockWSServer(port: number = 0): { server: ws.WebSocketServ
         ws.send(JSON.stringify(message))
       }
 
-      const message = { ...data, timeSended: Date.now() }
+      const message = { ...parsedData, timeSended: Date.now() }
 
       // setTimeout(() => {
       //   ws.send(JSON.stringify(message))

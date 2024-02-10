@@ -1,22 +1,19 @@
-import { describe, it, expect, vitest, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
 import WSGO from '../src/index'
 import ws from 'ws'
+import { createMockWSServer } from './utils'
 
 describe('subscribe', () => {
-  let port = 0
+  const date = new Date(2000, 1, 1)
+
+  let port: number = 0
   let server: ws.Server
 
   beforeAll(() => {
-    server = new ws.WebSocketServer({ port })
+    const mockWSServer = createMockWSServer(port)
 
-    server.on('connection', (ws) => {
-      ws.on('message', (data, isBinary) => {
-        const message = isBinary ? data : data.toString()
-        ws.send(message)
-      })
-    })
-
-    port = (server.address() as ws.AddressInfo).port
+    server = mockWSServer.server
+    port = mockWSServer.port
   })
 
   afterAll(() => {
@@ -24,28 +21,32 @@ describe('subscribe', () => {
   })
 
   it('should subscribe to event', async () => {
+    const eventName = 'eventName'
+    const eventData = { text: 'Hello World!' }
+
     let event: any
 
     // Arrange
     const wsgo = WSGO(`ws://localhost:${port}`)
-    await vitest.waitFor(() => {
+    await vi.waitFor(() => {
+      vi.setSystemTime(date)
       if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
         throw new Error()
       }
     })
 
     // Act
-    wsgo.subscribe('eventName', (ev) => (event = ev))
-    wsgo.send('eventName', { text: 'Hello World!' })
-    await vitest.waitFor(() => {
+    wsgo.subscribe(eventName, (ev) => (event = ev))
+    wsgo.send(eventName, eventData)
+    await vi.waitFor(() => {
+      vi.setSystemTime(date)
       if (event === undefined) {
         throw new Error()
       }
     })
-    wsgo.close()
 
     // Assert
-    expect(event).toStrictEqual({ event: 'eventName', data: { text: 'Hello World!' } })
+    expect(event).toStrictEqual({ event: eventName, data: eventData, timeSended: Date.now(), timeReceived: Date.now() })
   })
 
   it.todo('should work once', () => {})

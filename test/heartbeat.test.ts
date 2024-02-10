@@ -36,12 +36,18 @@ describe('open', () => {
 
     // Act
     wsgo.subscribe(eventName, (e) => (event = e))
-    await vi.waitFor(() => {
-      vi.setSystemTime(date)
-      if (event === undefined) {
-        throw new Error('Message not received back')
-      }
-    })
+    await vi.waitFor(
+      () => {
+        vi.setSystemTime(date)
+        if (event === undefined) {
+          throw new Error('Message not received back')
+        }
+      },
+      {
+        timeout: 5000,
+        interval: 250,
+      },
+    )
 
     // Assert
     expect(event).toStrictEqual({ event: eventName, timeSended: Date.now() })

@@ -1,9 +1,8 @@
 import { type WSGOEventName, type WSGOConfig, type WSGOSubscriptions } from './types'
 
-import { type WSGOSubscribeCallback } from './subscribe'
-
 import { send } from './send'
 import { subscribe } from './subscribe'
+import type { WSGOSubscribeCallback } from './subscribe/types'
 import { heartbeatStart, heartbeatStop, listenHeartbeat } from './heartbeat'
 
 /** Method allows you create new WebSocket connection */
@@ -63,7 +62,7 @@ export default function create(
       send(...args, ws, _config)
     },
     subscribe: (...args) => {
-      subscribe(subscriptions, ...args)
+      subscribe(...args, subscriptions, _config)
     },
   }
 }
@@ -110,15 +109,6 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
       }
 
       return
-    }
-
-    if (_config.debugging) {
-      if (message.event === 'exception') {
-        console.error(message.data)
-      } else {
-        const { event, data, time } = message
-        console.log(`%c${new Date(time).toLocaleTimeString()}%c`, 'color: gray', '', event, data)
-      }
     }
 
     if (message.event in subscriptions) {

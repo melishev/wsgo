@@ -44,7 +44,7 @@ describe('open', () => {
     })
 
     // Assert
-    expect(event).toStrictEqual({ event: eventName, timeSended: Date.now(), timeReceived: Date.now() })
+    expect(event).toStrictEqual({ event: eventName, timeSended: Date.now() })
   })
 
   it.todo('must close the connection if no response is received from the server')

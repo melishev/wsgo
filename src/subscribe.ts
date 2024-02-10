@@ -1,6 +1,6 @@
 import { type WSGOSubscriptions } from './types'
 
-type WSGOSubscribeCallback<T> = (message: WSGOSubscribeResponse<T>) => any
+export type WSGOSubscribeCallback<T> = (message: WSGOSubscribeResponse<T>) => any
 
 export interface WSGOSubscribeResponse<T = any> {
   /** Event name */

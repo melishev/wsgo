@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/melishev/wsgo/compare/v1.2.0...v1.3.0) (2024-02-10)
+
+
+### Features
+
+* add additional data to received message, move debugger to decorator ([#15](https://github.com/melishev/wsgo/issues/15)) ([14b7a8c](https://github.com/melishev/wsgo/commit/14b7a8cff0f2ff1874fd1a1ea2179318cac4ca0a))
+
 # [1.2.0](https://github.com/melishev/wsgo/compare/v1.1.0...v1.2.0) (2024-02-10)
 
 

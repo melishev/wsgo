@@ -1,5 +1,5 @@
-import { send } from './send'
-import type { WSGOConfig } from './types'
+import { send } from '../send'
+import type { WSGOConfig } from '../types'
 
 const heartbeatMessage = 'ping'
 const heartbeatInterval = 1000

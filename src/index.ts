@@ -1,5 +1,7 @@
 import { type WSGOEventName, type WSGOConfig, type WSGOSubscriptions } from './types'
 
+import { open } from './open'
+import { close } from './close'
 import { send } from './send'
 import type { WSGOSendData } from './send/types'
 import { subscribe } from './subscribe'
@@ -57,6 +59,8 @@ export default function create(
       }
     },
     close: () => {
+      if (ws === undefined) return
+
       close(ws)
     },
     send: (...args) => {
@@ -68,18 +72,6 @@ export default function create(
       subscribe(...args, subscriptions, _config)
     },
   }
-}
-
-function open(url: string, _config: WSGOConfig): WebSocket {
-  // close()
-
-  const ws = new WebSocket(url)
-
-  // if (config.heartbeat) {
-  //   heartbeatStart(ws)
-  // }
-
-  return ws
 }
 
 function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOConfig): void {
@@ -118,14 +110,4 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
       subscriptions[message.event](message)
     }
   }
-}
-
-function close(ws?: WebSocket, ...[code = 1000, reason]: Parameters<WebSocket['close']>): void {
-  if (ws === undefined) return
-
-  // stop heartbeat interval
-  heartbeatStop()
-
-  // close websocket connection
-  ws.close(code, reason)
 }

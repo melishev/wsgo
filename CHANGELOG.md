@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/melishev/wsgo/compare/v1.1.0...v1.2.0) (2024-02-10)
+
+
+### Features
+
+* add heartbeat mechanism ([#14](https://github.com/melishev/wsgo/issues/14)) ([ff6d8c5](https://github.com/melishev/wsgo/commit/ff6d8c5a3d1937db2ebca6080aaa1f9d451ef1c2))
+
 # [1.1.0](https://github.com/melishev/wsgo/compare/v1.0.0...v1.1.0) (2024-02-05)
 
 

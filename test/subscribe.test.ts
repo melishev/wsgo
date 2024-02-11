@@ -45,27 +45,57 @@ describe('subscribe', () => {
 
   it.todo('should work once', () => {})
 
-  it.todo('should receive an error from the server', async () => {
-    // TODO: implement own server for testing needs
-    // let event: any
-    // // Arrange
-    // const wsgo = WSGO(`ws://localhost:${port}`)
-    // await vitest.waitFor(() => {
-    //   if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
-    //     throw new Error()
-    //   }
-    // })
-    // // Act
-    // wsgo.subscribe('eventName', (ev) => event = ev)
-    // wsgo.send('eventName', { text: 'Hello World!' })
-    // await vitest.waitFor(() => {
-    //   if (event === undefined) {
-    //     throw new Error()
-    //   }
-    // })
-    // // Assert
-    // expect(wsgo.ws).toBeInstanceOf(window.WebSocket)
-    // expect(wsgo.ws?.readyState).toBe(window.WebSocket.OPEN)
-    // expect(event).toStrictEqual({ event: 'eventName', data: { text: 'Hello World!' }})
+  it('should output log to the console if debugging is enabled', async () => {
+    const logSpy = vi.spyOn(console, 'log')
+    let event: any
+
+    // Arrange
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
+      debugging: true,
+    })
+    await vi.waitFor(() => {
+      if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
+        throw new Error()
+      }
+    })
+
+    // Act
+    wsgo.subscribe('eventName', (e) => (event = e))
+    wsgo.ws?.send(JSON.stringify({ event: 'eventName', data: 'Hello world!' }))
+    await vi.waitFor(() => {
+      if (event === undefined) {
+        throw new Error()
+      }
+    })
+
+    // Assert
+    expect(logSpy).toHaveBeenCalled()
+  })
+
+  it('should output error to the console if debugging is enabled and an exception event is returned', async () => {
+    const errorSpy = vi.spyOn(console, 'error')
+    let event: any
+
+    // Arrange
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
+      debugging: true,
+    })
+    await vi.waitFor(() => {
+      if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
+        throw new Error()
+      }
+    })
+
+    // Act
+    wsgo.subscribe('exception', (e) => (event = e))
+    wsgo.ws?.send(JSON.stringify({ event: 'exception', data: 'Hello world!' }))
+    await vi.waitFor(() => {
+      if (event === undefined) {
+        throw new Error()
+      }
+    })
+
+    // Assert
+    expect(errorSpy).toHaveBeenCalled()
   })
 })

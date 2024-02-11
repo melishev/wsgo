@@ -1,26 +1,21 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import WSGO from '../src/index'
-import ws from 'ws'
 import { createMockWSServer } from './utils'
 
 describe('open', () => {
-  let port: number = 0
-  let server: ws.Server
+  let mockWSServer: ReturnType<typeof createMockWSServer>
 
-  beforeAll(() => {
-    const mockWSServer = createMockWSServer(port)
-
-    server = mockWSServer.server
-    port = mockWSServer.port
+  beforeEach(() => {
+    mockWSServer = createMockWSServer()
   })
 
-  afterAll(() => {
-    server.close()
+  afterEach(() => {
+    mockWSServer.server.close()
   })
 
   it('should open WebSocket when immediate = false, but the open method is called', () => {
     // Arrange
-    const wsgo = WSGO(`ws://localhost:${port}`, {
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
       immediate: false,
     })
 
@@ -31,7 +26,7 @@ describe('open', () => {
     expect(wsgo.ws).toBeInstanceOf(window.WebSocket)
     expect(wsgo.ws?.readyState).toBe(window.WebSocket.CONNECTING)
     // check source data
-    expect(wsgo.ws?.url).toBe(`ws://localhost:${port}/`)
+    expect(wsgo.ws?.url).toBe(`ws://localhost:${mockWSServer.port}/`)
   })
 
   it.todo('should open new Websocket, after closing old', () => {})

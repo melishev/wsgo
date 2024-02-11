@@ -1,23 +1,17 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import WSGO from '../src/index'
-import ws from 'ws'
 import { createMockWSServer } from './utils'
 
 describe('heartbeat', () => {
   const date = new Date(2000, 1, 1)
+  let mockWSServer: ReturnType<typeof createMockWSServer>
 
-  let port: number = 0
-  let server: ws.Server
-
-  beforeAll(() => {
-    const mockWSServer = createMockWSServer(port)
-
-    server = mockWSServer.server
-    port = mockWSServer.port
+  beforeEach(() => {
+    mockWSServer = createMockWSServer()
   })
 
-  afterAll(() => {
-    server.close()
+  afterEach(() => {
+    mockWSServer.server.close()
   })
 
   it('should send a ping event and receive a pong response', async () => {
@@ -26,7 +20,7 @@ describe('heartbeat', () => {
     let event: any
 
     // Arrange
-    const wsgo = WSGO(`ws://localhost:${port}`)
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`)
     await vi.waitFor(() => {
       vi.setSystemTime(date)
       if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
@@ -53,5 +47,30 @@ describe('heartbeat', () => {
     expect(event).toStrictEqual({ event: eventName, timeSended: Date.now(), timeReceived: Date.now() })
   })
 
-  it.todo('must close the connection if no response is received from the server')
+  it('must close the connection if no response is received from the server', async () => {
+    // Arrange
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`)
+    await vi.waitFor(() => {
+      if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
+        throw new Error()
+      }
+    })
+
+    // Act
+    mockWSServer.turnHeartbeat()
+    await vi.waitFor(
+      () => {
+        if (wsgo.ws?.readyState !== window.WebSocket.CLOSED) {
+          throw new Error()
+        }
+      },
+      {
+        timeout: 5000,
+        interval: 250,
+      },
+    )
+
+    // Assert
+    expect(wsgo.ws?.readyState).toBe(window.WebSocket.CLOSED)
+  })
 })

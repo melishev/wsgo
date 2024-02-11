@@ -1,26 +1,21 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import WSGO from '../src/index'
-import ws from 'ws'
 import { createMockWSServer } from './utils'
 
 describe('close', () => {
-  let port: number = 0
-  let server: ws.Server
+  let mockWSServer: ReturnType<typeof createMockWSServer>
 
-  beforeAll(() => {
-    const mockWSServer = createMockWSServer(port)
-
-    server = mockWSServer.server
-    port = mockWSServer.port
+  beforeEach(() => {
+    mockWSServer = createMockWSServer()
   })
 
-  afterAll(() => {
-    server.close()
+  afterEach(() => {
+    mockWSServer.server.close()
   })
 
   it('should close the WebSocket when it is not already open', () => {
     // Arrange
-    const wsgo = WSGO(`ws://localhost:${port}`)
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`)
 
     // Act
     wsgo.close()

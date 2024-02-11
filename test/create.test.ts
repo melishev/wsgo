@@ -1,26 +1,21 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import WSGO from '../src/index'
-import ws from 'ws'
 import { createMockWSServer } from './utils'
 
 describe('create', () => {
-  let port: number = 0
-  let server: ws.Server
+  let mockWSServer: ReturnType<typeof createMockWSServer>
 
-  beforeAll(() => {
-    const mockWSServer = createMockWSServer(port)
-
-    server = mockWSServer.server
-    port = mockWSServer.port
+  beforeEach(() => {
+    mockWSServer = createMockWSServer()
   })
 
-  afterAll(() => {
-    server.close()
+  afterEach(() => {
+    mockWSServer.server.close()
   })
 
   it('should create a WebSocket, and connect to the server when immediate = default value of', () => {
     // Act
-    const wsgo = WSGO(`ws://localhost:${port}`)
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`)
 
     // Assert
     expect(wsgo.ws).toBeInstanceOf(window.WebSocket)
@@ -29,7 +24,7 @@ describe('create', () => {
 
   it('should create a WebSocket, and connect to the server when immediate = true', () => {
     // Act
-    const wsgo = WSGO(`ws://localhost:${port}`, {
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
       immediate: true,
     })
 
@@ -40,7 +35,7 @@ describe('create', () => {
 
   it('should not create WebSocket when immediate = false', () => {
     // Act
-    const wsgo = WSGO(`ws://localhost:${port}`, {
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
       immediate: false,
     })
 

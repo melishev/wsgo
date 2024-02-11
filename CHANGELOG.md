@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/melishev/wsgo/compare/v1.3.0...v1.3.1) (2024-02-11)
+
+
+### Bug Fixes
+
+* bug where heartbeat wasn't working ([#18](https://github.com/melishev/wsgo/issues/18)) ([02bf966](https://github.com/melishev/wsgo/commit/02bf9669a5c93a52e12c305dbd100fef92ce1ec4))
+
 # [1.3.0](https://github.com/melishev/wsgo/compare/v1.2.0...v1.3.0) (2024-02-10)
 
 

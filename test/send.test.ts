@@ -7,11 +7,13 @@ describe('send', () => {
   let mockWSServer: ReturnType<typeof createMockWSServer>
 
   beforeEach(() => {
+    vi.useFakeTimers()
     mockWSServer = createMockWSServer()
   })
 
   afterEach(() => {
     mockWSServer.server.close()
+    vi.restoreAllMocks()
   })
 
   it('should send an event to the server', async () => {
@@ -41,5 +43,28 @@ describe('send', () => {
 
     // Assert
     expect(event).toStrictEqual({ event: eventName, data: eventData, timeSended: Date.now(), timeReceived: Date.now() })
+  })
+
+  it('should output logs to the console if debugging is enabled', async () => {
+    const groupSpy = vi.spyOn(console, 'group')
+    const groupEndSpy = vi.spyOn(console, 'groupEnd')
+
+    // Arrange
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`, {
+      debugging: true,
+    })
+    await vi.waitFor(() => {
+      if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {
+        throw new Error()
+      }
+    })
+
+    // Act
+    wsgo.send('eventName', { text: 'Hello, world!' })
+    vi.advanceTimersByTime(100)
+
+    // Assert
+    expect(groupSpy).toHaveBeenCalledWith('eventName', { text: 'Hello, world!' })
+    expect(groupEndSpy).toHaveBeenCalled()
   })
 })

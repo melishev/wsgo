@@ -1,13 +1,14 @@
 import ws from 'ws'
 
-export function createMockWSServer(port: number = 0): { server: ws.WebSocketServer; port: number } {
-  let server = new ws.WebSocketServer({ port })
+export function createMockWSServer(): { server: ws.WebSocketServer; port: number; turnHeartbeat: () => void } {
+  let server = new ws.WebSocketServer({ port: 0 })
+  let heartbeatDisabled = false
 
   server.on('connection', (ws) => {
     ws.on('message', (data, isBinary) => {
       const parsedData = isBinary ? data : (JSON.parse(data.toString()) as any)
 
-      if (parsedData.event === 'ping') {
+      if (parsedData.event === 'ping' && !heartbeatDisabled) {
         const message = { event: 'pong', timeSended: Date.now() }
         ws.send(JSON.stringify(message))
       }
@@ -24,5 +25,7 @@ export function createMockWSServer(port: number = 0): { server: ws.WebSocketServ
   return {
     server,
     port: (server.address() as ws.AddressInfo).port,
+
+    turnHeartbeat: () => (heartbeatDisabled = !heartbeatDisabled),
   }
 }

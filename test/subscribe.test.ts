@@ -1,23 +1,17 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import WSGO from '../src/index'
-import ws from 'ws'
 import { createMockWSServer } from './utils'
 
 describe('subscribe', () => {
   const date = new Date(2000, 1, 1)
+  let mockWSServer: ReturnType<typeof createMockWSServer>
 
-  let port: number = 0
-  let server: ws.Server
-
-  beforeAll(() => {
-    const mockWSServer = createMockWSServer(port)
-
-    server = mockWSServer.server
-    port = mockWSServer.port
+  beforeEach(() => {
+    mockWSServer = createMockWSServer()
   })
 
-  afterAll(() => {
-    server.close()
+  afterEach(() => {
+    mockWSServer.server.close()
   })
 
   it('should subscribe to event', async () => {
@@ -27,7 +21,7 @@ describe('subscribe', () => {
     let event: any
 
     // Arrange
-    const wsgo = WSGO(`ws://localhost:${port}`)
+    const wsgo = WSGO(`ws://localhost:${mockWSServer.port}`)
     await vi.waitFor(() => {
       vi.setSystemTime(date)
       if (wsgo.ws?.readyState !== window.WebSocket.OPEN) {

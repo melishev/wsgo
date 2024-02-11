@@ -1,4 +1,4 @@
-import type { WSGOHeartbeat } from '../heartbeat/types'
+import type { WSGOHeartbeat } from './heartbeat/types'
 
 export type WSGOEventName = string
 
@@ -12,4 +12,13 @@ export interface WSGOConfig {
   debugging: boolean
   immediate: boolean
   heartbeat: WSGOHeartbeat
+}
+
+export interface WSGOMessage<T> {
+  /** Event name */
+  event: WSGOEventName
+  /** Event data */
+  data: T
+  /** Time when the server sent the event */
+  timeSended: number
 }

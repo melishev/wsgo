@@ -1,4 +1,4 @@
-import { type WSGOEventName, type WSGOConfig, type WSGOSubscriptions } from './types'
+import type { WSGOEventName, WSGOConfig, WSGOSubscriptions, WSGOMessage } from './types'
 
 import { open } from './open'
 import { close } from './close'
@@ -6,7 +6,7 @@ import { send } from './send'
 import type { WSGOSendData } from './send/types'
 import { subscribe } from './subscribe'
 import type { WSGOSubscribeCallback } from './subscribe/types'
-import { heartbeatStart, heartbeatStop, listenHeartbeat } from './heartbeat'
+import { heartbeatStart, heartbeatStop, heartbeatListen } from './heartbeat'
 
 /** Method allows you create new WebSocket connection */
 export default function create(
@@ -61,7 +61,7 @@ export default function create(
     close: () => {
       if (ws === undefined) return
 
-      close(ws)
+      close(ws, _config)
     },
     send: (...args) => {
       if (ws === undefined) return
@@ -81,20 +81,8 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
     heartbeatStart(ws, _config)
   }
 
-  ws.onclose = (ev) => {
-    _config.onDisconnected?.(ws, ev)
-
-    heartbeatStop()
-  }
-
-  ws.onerror = (ev) => {
-    _config.onError?.(ws, ev)
-  }
-
   ws.onmessage = (e: MessageEvent<any>): any => {
-    listenHeartbeat(ws, _config, e)
-
-    let message
+    let message: WSGOMessage<any>
 
     try {
       message = JSON.parse(e.data)
@@ -106,8 +94,20 @@ function _listen(ws: WebSocket, subscriptions: WSGOSubscriptions, _config: WSGOC
       return
     }
 
+    heartbeatListen(ws, _config, message)
+
     if (message.event in subscriptions) {
       subscriptions[message.event](message)
     }
+  }
+
+  ws.onerror = (ev) => {
+    _config.onError?.(ws, ev)
+  }
+
+  ws.onclose = (ev) => {
+    _config.onDisconnected?.(ws, ev)
+
+    heartbeatStop()
   }
 }

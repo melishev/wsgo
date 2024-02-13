@@ -2,7 +2,7 @@
 
 <p align="center">WebSocket client for the browser. Simplifying development and debugging</p>
 
-> [!NOTES]
+> [!NOTE]
 > Please lock the version of the package. This library is not stable yet and may have some behavioral differences depending on the version.
 
 ### What is WSGO?

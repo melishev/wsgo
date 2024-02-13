@@ -1,3 +1,15 @@
+<div align="center">
+<svg width="100" height="100" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="1" y="1" width="48" height="48" rx="9" fill="white"/>
+<rect x="1" y="1" width="48" height="48" rx="9" stroke="black" stroke-width="2"/>
+<circle cx="25" cy="25" r="14.5" stroke="black"/>
+<circle cx="20" cy="25" r="1.5" fill="black" stroke="black"/>
+<circle cx="30" cy="25" r="1.5" fill="black" stroke="black"/>
+<path d="M25 11V12" stroke="black" stroke-linecap="round"/>
+<path d="M25 38V39" stroke="black" stroke-linecap="round"/>
+</svg>
+</div>
+
 <h1 align="center">WSGO</h1>
 
 <p align="center">WebSocket client for the browser. Simplifying development and debugging</p>
